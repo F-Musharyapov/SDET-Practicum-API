@@ -3,7 +3,6 @@ package tests;
 import helpers.BaseRequests;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import org.hamcrest.core.IsEqual;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -11,7 +10,6 @@ import pojo.User;
 import pojo.UserUpdate;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 import static helpers.TestDataHelper.*;

@@ -69,11 +69,10 @@ public class GetUserTest {
                 .body("id", IsEqual.equalTo(Integer.parseInt(userID)))
                 .body("title", IsEqual.equalTo(userPojo.getTitle()))
                 .body("verified", IsEqual.equalTo(userPojo.getVerified()))
-                //.body("additional_info", IsEqual.equalTo(ADD_INFO))
-                //.body("additional_number", IsEqual.equalTo(ADD_NUMBER))
+                .body("addition.additional_info", IsEqual.equalTo(ADD_INFO))
+                .body("addition.additional_number", IsEqual.equalTo(ADD_NUMBER))
                 .body("important_numbers", IsEqual.equalTo(userPojo.getImportant_numbers()));
     }
-
 
     @AfterClass
     public void deleteUserAfterCreation() {

@@ -25,6 +25,7 @@ public class BaseRequests {
 
     /**
      * Метод для получения спецификации RestAssured
+     *
      * @return спецификация
      * @throws IOException
      */

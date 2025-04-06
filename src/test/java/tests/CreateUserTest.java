@@ -17,7 +17,7 @@ public class CreateUserTest {
 
     private RequestSpecification requestSpecification;
 
-    String userID;
+    private String userID;
 
     @BeforeClass
     public void setup() throws IOException {
