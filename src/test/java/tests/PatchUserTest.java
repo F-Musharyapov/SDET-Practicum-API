@@ -1,6 +1,7 @@
 package tests;
 
 import helpers.BaseRequests;
+import io.qameta.allure.Description;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.testng.annotations.AfterClass;
@@ -16,18 +17,38 @@ import static helpers.TestDataHelper.*;
 import static helpers.TestDataHelper.STATUS_CODE_OK;
 import static io.restassured.RestAssured.given;
 
+/**
+ * Класс тестирования PATCH-запроса
+ */
 public class PatchUserTest {
 
+    /**
+     * Экземпляр спецификации RestAssured
+     */
     private RequestSpecification requestSpecification;
+
+    /**
+     * Экземпляр массива для хранения данных до изменения
+     */
     Map<String, Object> oldData;
+
+    /**
+     * Переменная для хранения user ID
+     */
     String userID;
 
+    /**
+     * Метод инициализации спецификации запроса
+     *
+     * @throws IOException если не удается инициализировать спецификацию запроса
+     */
     @BeforeClass
     public void setup() throws IOException {
         requestSpecification = BaseRequests.initRequestSpecification();
     }
 
     @Test
+    @Description("Тестовый метод для создания пользователя")
     public void createUser() {
         User.Addition userAddition = User.Addition.builder()
                 .additional_info(ADD_INFO)
@@ -51,6 +72,7 @@ public class PatchUserTest {
     }
 
     @Test(dependsOnMethods = "createUser")
+    @Description("Тестовый метод проверки добавления пользователя и добавления данных в массив")
     public void getUserFirst() {
         Response responseFirst = given()
                 .when()
@@ -64,8 +86,9 @@ public class PatchUserTest {
     }
 
     @Test(dependsOnMethods = "getUserFirst")
+    @Description("Тестовый метод для изменения данных пользователя")
     public void patchUser() {
-        UserUpdate.Addition userUpdateAddition = UserUpdate.Addition.builder()
+        UserUpdate.UpdateAddition userUpdateAddition = UserUpdate.UpdateAddition.builder()
                 .additional_info(ADD_INFO_UPDATE)
                 .additional_number(ADD_NUMBER_UPDATE)
                 .build();
@@ -87,6 +110,7 @@ public class PatchUserTest {
     }
 
     @Test(dependsOnMethods = "patchUser")
+    @Description("Тестовый метод проверки внесения изменений и сравнения с предыдущими данными")
     public void getUserSecond() {
         Response responseSecond = given()
                 .when()
@@ -100,6 +124,9 @@ public class PatchUserTest {
         assert !oldData.equals(newData) : "Ошибка! Данные не изменились после обновления!";
     }
 
+    /**
+     * Метод удаления соданного user из базы после всех запросов
+     */
     @AfterClass
     public void deleteUserAfterCreation() {
         BaseRequests.deleteUserById(String.valueOf(userID));

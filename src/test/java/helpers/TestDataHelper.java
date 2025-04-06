@@ -2,6 +2,9 @@ package helpers;
 
 import java.util.List;
 
+/**
+ * Класс с константами
+ */
 public class TestDataHelper {
 
     /**

@@ -7,19 +7,28 @@ import java.util.List;
 
 import static helpers.TestDataHelper.*;
 
+/**
+ * Обновленный класс пользователя с его переменными
+ */
 @Data
 @Builder
 public class UserUpdate {
 
-    private final UserUpdate.Addition addition;
+    /**
+     * Экземпляр класса UpdateAddition
+     */
+    private final UpdateAddition addition;
 
-    public final String title = TITLE_UPDATE;
-    public final Boolean verified = VERIFIED;
-    public final List<Integer> important_numbers = IMPORTANT_NUMBERS_UPDATE;
+    private final String title = TITLE_UPDATE;
+    private final Boolean verified = VERIFIED;
+    private final List<Integer> important_numbers = IMPORTANT_NUMBERS_UPDATE;
 
+    /**
+     * Класс UpdateAddition с дополнительными полями
+     */
     @Data
     @Builder
-    public static class Addition {
+    public static class UpdateAddition {
         private final String additional_info;
         private final Integer additional_number;
     }

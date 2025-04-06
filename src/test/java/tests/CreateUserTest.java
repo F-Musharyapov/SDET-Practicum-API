@@ -1,6 +1,7 @@
 package tests;
 
 import helpers.BaseRequests;
+import io.qameta.allure.Description;
 import io.restassured.specification.RequestSpecification;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -13,18 +14,33 @@ import static helpers.TestDataHelper.*;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.core.IsEqual.equalTo;
 
+/**
+ * Класс тестирования POST-запроса
+ */
 public class CreateUserTest {
 
+    /**
+     * Экземпляр спецификации RestAssured
+     */
     private RequestSpecification requestSpecification;
 
+    /**
+     * Переменная для хранения user ID
+     */
     private String userID;
 
+    /**
+     * Метод инициализации спецификации запроса
+     *
+     * @throws IOException если не удается инициализировать спецификацию запроса
+     */
     @BeforeClass
     public void setup() throws IOException {
         requestSpecification = BaseRequests.initRequestSpecification();
     }
 
-    @Test()
+    @Test
+    @Description("Тестовый метод для проверки создания пользователя")
     public void testCreateUser() {
         User.Addition userAddition = User.Addition.builder()
                 .additional_info(ADD_INFO)
@@ -48,6 +64,7 @@ public class CreateUserTest {
     }
 
     @Test(dependsOnMethods = "testCreateUser")
+    @Description("Тестовый метод для проверки получения пользователя по его идентификатору")
     public void testGetUser() {
         given()
                 .spec(requestSpecification)
@@ -60,6 +77,9 @@ public class CreateUserTest {
                 .body("id", equalTo(Integer.parseInt(userID)));
     }
 
+    /**
+     * Метод удаления соданного user из базы после всех запросов
+     */
     @AfterClass
     public void deleteUserAfterCreation() {
         BaseRequests.deleteUserById(String.valueOf(userID));

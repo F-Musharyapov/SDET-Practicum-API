@@ -1,6 +1,7 @@
 package tests;
 
 import helpers.BaseRequests;
+import io.qameta.allure.Description;
 import io.restassured.specification.RequestSpecification;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -12,18 +13,33 @@ import java.io.IOException;
 import static helpers.TestDataHelper.*;
 import static io.restassured.RestAssured.given;
 
+/**
+ * Класс тестирования DELETE-запроса
+ */
 public class DeleteUserTest {
 
+    /**
+     * Экземпляр спецификации RestAssured
+     */
     private RequestSpecification requestSpecification;
 
+    /**
+     * Переменная для хранения user ID
+     */
     private String userID;
 
+    /**
+     * Метод инициализации спецификации запроса
+     *
+     * @throws IOException если не удается инициализировать спецификацию запроса
+     */
     @BeforeClass
     public void setup() throws IOException {
         requestSpecification = BaseRequests.initRequestSpecification();
     }
 
-    @Test()
+    @Test
+    @Description("Тестовый метод для создания пользователя")
     public void requestCreateUser() {
         User.Addition userAddition = User.Addition.builder()
                 .additional_info(ADD_INFO)
@@ -47,6 +63,7 @@ public class DeleteUserTest {
     }
 
     @Test(dependsOnMethods = "requestCreateUser")
+    @Description("Тестовый метод для проверки удаления пользователя")
     public void requestDeleteUser() {
         given()
                 .when()
@@ -57,6 +74,9 @@ public class DeleteUserTest {
                 .statusCode(STATUS_CODE_NO_CONTENT);
     }
 
+    /**
+     * Метод удаления соданного user из базы после всех запросов
+     */
     @AfterClass
     public void requestGetUser() {
         given()

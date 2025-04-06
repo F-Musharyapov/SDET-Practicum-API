@@ -1,6 +1,7 @@
 package tests;
 
 import helpers.BaseRequests;
+import io.qameta.allure.Description;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.testng.Assert;
@@ -16,19 +17,38 @@ import static helpers.TestDataHelper.*;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.core.IsEqual.equalTo;
 
+/**
+ * Класс тестирования GET/ALL-запроса
+ */
 public class GetAllUserTest {
 
+    /**
+     * Экземпляр спецификации RestAssured
+     */
     private RequestSpecification requestSpecification;
 
+    /**
+     * Переменная для хранения user ID
+     */
     private int userIDFirst;
+
+    /**
+     * Переменная для хранения user ID
+     */
     private int userIDSecond;
 
+    /**
+     * Метод инициализации спецификации запроса
+     *
+     * @throws IOException если не удается инициализировать спецификацию запроса
+     */
     @BeforeClass
     public void setup() throws IOException {
         requestSpecification = BaseRequests.initRequestSpecification();
     }
 
     @Test
+    @Description("Тестовый метод создания двух пользователей")
     public void requestCreateUser() {
         User.Addition userAddition = User.Addition.builder()
                 .additional_info(ADD_INFO)
@@ -63,6 +83,7 @@ public class GetAllUserTest {
     }
 
     @Test(dependsOnMethods = "requestCreateUser")
+    @Description("Тестовый метод для получения списка пользователей и проверки наличия в списке ранее созданных")
     public void givenAllUsersTest() {
         Response response = given()
                 .when()
@@ -79,6 +100,7 @@ public class GetAllUserTest {
     }
 
     @Test(dependsOnMethods = "requestCreateUser")
+    @Description("Тестовый метод для проверки наличия созданного первого пользователя")
     public void requestGetUser1() {
         given()
                 .when()
@@ -91,6 +113,7 @@ public class GetAllUserTest {
     }
 
     @Test(dependsOnMethods = "requestGetUser1")
+    @Description("Тестовый метод для проверки наличия созданного второго пользователя")
     public void requestGetUser2() {
         given()
                 .when()
@@ -102,6 +125,9 @@ public class GetAllUserTest {
                 .body("id", equalTo(userIDSecond));
     }
 
+    /**
+     * Метод удаления соданных user из базы после всех запросов
+     */
     @AfterClass
     public void requestDeleteUser() {
         given()
