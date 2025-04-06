@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="User manipulation tests">
+    <test name="PostTests">
+        <classes>
+            <class name="tests.CreateUserTest"/>
+        </classes>
+    </test>
+    <test name="DeleteTests">
+        <classes>
+            <class name="tests.GetUserTest"/>
+        </classes>
+    </test>
+    <test name="GetTests">
+        <classes>
+            <class name="tests.DeleteUserTest"/>
+        </classes>
+    </test>
+    <test name="PostAllTests">
+        <classes>
+            <class name="tests.GetAllUserTest"/>
+        </classes>
+    </test>
+    <test name="PathTests">
+        <classes>
+            <class name="tests.PatchUserTest"/>
+        </classes>
+    </test>
+</suite>
