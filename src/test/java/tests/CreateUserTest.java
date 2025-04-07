@@ -6,6 +6,7 @@ import io.restassured.specification.RequestSpecification;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import pojo.Addition;
 import pojo.User;
 
 import java.io.IOException;
@@ -41,38 +42,33 @@ public class CreateUserTest {
 
     @Test
     @Description("Тестовый метод для проверки создания пользователя")
-    public void testCreateUser() {
-        User.Addition userAddition = User.Addition.builder()
-                .additional_info(ADD_INFO)
-                .additional_number(ADD_NUMBER)
-                .build();
+    public void createUserTest() {
 
         User userPojo = User.builder()
-                .addition(userAddition)
+                .addition(
+                        Addition.builder()
+                                .additional_info(ADD_INFO)
+                                .additional_number(ADD_NUMBER)
+                                .build())
+                .important_numbers(IMPORTANT_NUMBERS)
+                .title(TITLE)
+                .verified(VERIFIED)
                 .build();
 
         userID = given()
                 .spec(requestSpecification)
                 .body(userPojo)
                 .when()
-                .log().all()
-                .post("api/create")
+                .post(REQUEST_POST)
                 .then()
-                .log().all()
                 .statusCode(STATUS_CODE_OK)
                 .extract().asString();
-    }
 
-    @Test(dependsOnMethods = "testCreateUser")
-    @Description("Тестовый метод для проверки получения пользователя по его идентификатору")
-    public void testGetUser() {
         given()
                 .spec(requestSpecification)
                 .when()
-                .log().all()
-                .get("api/get/" + userID)
+                .get(REQUEST_GET + userID)
                 .then()
-                .log().all()
                 .statusCode(STATUS_CODE_OK)
                 .body("id", equalTo(Integer.parseInt(userID)));
     }
@@ -81,7 +77,7 @@ public class CreateUserTest {
      * Метод удаления соданного user из базы после всех запросов
      */
     @AfterClass
-    public void deleteUserAfterCreation() {
+    public void userAfterCreationDelete() {
         BaseRequests.deleteUserById(String.valueOf(userID));
     }
 }

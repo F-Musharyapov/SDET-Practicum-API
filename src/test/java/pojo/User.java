@@ -2,16 +2,16 @@ package pojo;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
-
-import static helpers.TestDataHelper.*;
 
 /**
  * Класс пользователя с его переменными
  */
 @Data
 @Builder
+@EqualsAndHashCode(exclude = {"id"})
 public class User {
 
     /**
@@ -19,17 +19,8 @@ public class User {
      */
     private final Addition addition;
 
-    private final String title = TITLE;
-    private final Boolean verified = VERIFIED;
-    private final List<Integer> important_numbers = IMPORTANT_NUMBERS;
+    private final String title;
+    private final Boolean verified;
+    private final List<Integer> important_numbers;
 
-    /**
-     * Класс Addition с дополнительными полями
-     */
-    @Data
-    @Builder
-    public static class Addition {
-        private final String additional_info;
-        private final Integer additional_number;
-    }
 }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Suite" parallel="classes" thread-count="5">
+    <test name="MultipleTestClasses">
+        <classes>
+            <class name="tests.CreateUserTest"/>
+            <class name="tests.DeleteUserTest"/>
+            <class name="tests.GetUserTest"/>
+            <class name="tests.GetAllUserTest"/>
+            <class name="tests.PatchUserTest"/>
+        </classes>
+    </test>
+</suite>

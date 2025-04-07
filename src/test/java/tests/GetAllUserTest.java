@@ -8,14 +8,15 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import pojo.Addition;
 import pojo.User;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import static helpers.TestDataHelper.*;
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.core.IsEqual.equalTo;
 
 /**
  * Класс тестирования GET/ALL-запроса
@@ -47,26 +48,29 @@ public class GetAllUserTest {
         requestSpecification = BaseRequests.initRequestSpecification();
     }
 
-    @Test
-    @Description("Тестовый метод создания двух пользователей")
-    public void requestCreateUser() {
-        User.Addition userAddition = User.Addition.builder()
-                .additional_info(ADD_INFO)
-                .additional_number(ADD_NUMBER)
-                .build();
+    /**
+     * Метод создания двух пользователей
+     */
+    @BeforeClass(dependsOnMethods = "setup")
+    public void createUser() {
 
         User userPojo = User.builder()
-                .addition(userAddition)
+                .addition(
+                        Addition.builder()
+                                .additional_info(ADD_INFO)
+                                .additional_number(ADD_NUMBER)
+                                .build())
+                .important_numbers(IMPORTANT_NUMBERS)
+                .title(TITLE)
+                .verified(VERIFIED)
                 .build();
 
         userIDFirst = Integer.parseInt(given()
                 .spec(requestSpecification)
                 .body(userPojo)
                 .when()
-                .log().all()
-                .post("api/create")
+                .post(REQUEST_POST)
                 .then()
-                .log().all()
                 .statusCode(STATUS_CODE_OK)
                 .extract().asString());
 
@@ -74,75 +78,48 @@ public class GetAllUserTest {
                 .spec(requestSpecification)
                 .body(userPojo)
                 .when()
-                .log().all()
-                .post("api/create")
+                .post(REQUEST_POST)
                 .then()
-                .log().all()
                 .statusCode(STATUS_CODE_OK)
                 .extract().asString());
     }
 
-    @Test(dependsOnMethods = "requestCreateUser")
+    @Test
     @Description("Тестовый метод для получения списка пользователей и проверки наличия в списке ранее созданных")
     public void givenAllUsersTest() {
         Response response = given()
                 .when()
-                .log().all()
-                .get("/api/getAll")
+                .get(REQUEST_POST_ALL)
                 .then()
-                .log().all()
                 .statusCode(STATUS_CODE_OK)
                 .extract().response();
         List<Integer> allUser = response.jsonPath().getList("entity.id");
+        List<Integer> createdUsers = Arrays.asList(userIDFirst, userIDSecond);
         Assert.assertNotNull(allUser, "Список пользователей не должен быть null");
-        Assert.assertTrue(allUser.contains(userIDFirst), "Первый пользователь не найден в ответе");
-        Assert.assertTrue(allUser.contains(userIDSecond), "Второй пользователь не найден в ответе");
-    }
-
-    @Test(dependsOnMethods = "requestCreateUser")
-    @Description("Тестовый метод для проверки наличия созданного первого пользователя")
-    public void requestGetUser1() {
-        given()
-                .when()
-                .log().all()
-                .get("api/get/" + userIDFirst)
-                .then()
-                .log().all()
-                .statusCode(STATUS_CODE_OK)
-                .body("id", equalTo(userIDFirst));
-    }
-
-    @Test(dependsOnMethods = "requestGetUser1")
-    @Description("Тестовый метод для проверки наличия созданного второго пользователя")
-    public void requestGetUser2() {
-        given()
-                .when()
-                .log().all()
-                .get("api/get/" + userIDSecond)
-                .then()
-                .log().all()
-                .statusCode(STATUS_CODE_OK)
-                .body("id", equalTo(userIDSecond));
+        Assert.assertTrue(allUser.containsAll(createdUsers), "Созданные пользователи не найдены в ответе");
     }
 
     /**
-     * Метод удаления соданных user из базы после всех запросов
+     * Метод удаления соданных пользователей из базы после всех запросов
      */
     @AfterClass
-    public void requestDeleteUser() {
+    public void userAfterCreationDelete() {
+        deleteUser(userIDFirst);
+        deleteUser(userIDSecond);
+    }
+
+    /**
+     * Приватный метод для выполнения общего кода удаления
+     */
+    private void deleteUser(int userID) {
+
         given()
                 .when()
                 .log().all()
-                .delete("api/delete/" + userIDFirst)
-                .then()
-                .log().all()
-                .statusCode(STATUS_CODE_NO_CONTENT);
-        given()
-                .when()
-                .log().all()
-                .delete("api/delete/" + userIDSecond)
+                .delete(REQUEST_DELETE + userID)
                 .then()
                 .log().all()
                 .statusCode(STATUS_CODE_NO_CONTENT);
     }
+
 }

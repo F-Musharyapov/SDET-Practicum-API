@@ -8,6 +8,15 @@ import java.util.List;
 public class TestDataHelper {
 
     /**
+     * Константы запросов additionalInfo
+     */
+    public static final String REQUEST_POST = "api/create";
+    public static final String REQUEST_DELETE = "api/delete/";
+    public static final String REQUEST_GET = "api/get/";
+    public static final String REQUEST_POST_ALL = "api/getAll";
+    public static final String REQUEST_PATCH = "api/patch/";
+
+    /**
      * Идентификатор additionalInfo
      */
     public static final String ADD_INFO = "ДопИнфа";

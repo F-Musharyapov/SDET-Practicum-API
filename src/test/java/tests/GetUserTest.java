@@ -3,10 +3,11 @@ package tests;
 import helpers.BaseRequests;
 import io.qameta.allure.Description;
 import io.restassured.specification.RequestSpecification;
-import org.hamcrest.core.IsEqual;
+import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import pojo.Addition;
 import pojo.User;
 
 import java.io.IOException;
@@ -30,6 +31,11 @@ public class GetUserTest {
     private String userID;
 
     /**
+     * Переменная для хранения объекта pojo при post запросе
+     */
+    private User userPojoSet;
+
+    /**
      * Метод инициализации спецификации запроса
      *
      * @throws IOException если не удается инициализировать спецификацию запроса
@@ -39,63 +45,51 @@ public class GetUserTest {
         requestSpecification = BaseRequests.initRequestSpecification();
     }
 
-    @Test
-    @Description("Тестовый метод для создания пользователя")
-    public void testPostCreateUser() {
-        User.Addition userAddition = User.Addition.builder()
-                .additional_info(ADD_INFO)
-                .additional_number(ADD_NUMBER)
-                .build();
+    /**
+     * Метод для создания пользователя
+     */
+    @BeforeClass(dependsOnMethods = "setup")
+    public void createUser() {
 
-        User userPojo = User.builder()
-                .addition(userAddition)
+        userPojoSet = User.builder()
+                .addition(
+                        Addition.builder()
+                                .additional_info(ADD_INFO)
+                                .additional_number(ADD_NUMBER)
+                                .build())
+                .important_numbers(IMPORTANT_NUMBERS)
+                .title(TITLE)
+                .verified(VERIFIED)
                 .build();
 
         userID = given()
                 .spec(requestSpecification)
-                .body(userPojo)
+                .body(userPojoSet)
                 .when()
-                .log().all()
-                .post("api/create")
+                .post(REQUEST_POST)
                 .then()
-                .log().all()
                 .statusCode(STATUS_CODE_OK)
                 .extract().asString();
     }
 
     @Test
     @Description("Тестовый метод для сравнения отправленных данных пользователя с полученными")
-    public void testGetUser() {
-        User.Addition userAddition = User.Addition.builder()
-                .additional_info(ADD_INFO)
-                .additional_number(ADD_NUMBER)
-                .build();
+    public void getUserTest() {
 
-        User userPojo = User.builder()
-                .addition(userAddition)
-                .build();
-
-        given()
-                .spec(requestSpecification)
+        User userPojoGet = given()
                 .when()
-                .log().all()
-                .get("api/get/" + userID)
+                .get(REQUEST_GET + userID)
                 .then()
-                .log().all()
                 .statusCode(STATUS_CODE_OK)
-                .body("id", IsEqual.equalTo(Integer.parseInt(userID)))
-                .body("title", IsEqual.equalTo(userPojo.getTitle()))
-                .body("verified", IsEqual.equalTo(userPojo.getVerified()))
-                .body("addition.additional_info", IsEqual.equalTo(ADD_INFO))
-                .body("addition.additional_number", IsEqual.equalTo(ADD_NUMBER))
-                .body("important_numbers", IsEqual.equalTo(userPojo.getImportant_numbers()));
+                .extract().as(User.class);
+        Assert.assertEquals(userPojoGet, userPojoSet, "Отправленный и полученный объекты User не совпадают");
     }
 
     /**
      * Метод удаления соданного user из базы после всех запросов
      */
     @AfterClass
-    public void deleteUserAfterCreation() {
+    public void userAfterCreationDelete() {
         BaseRequests.deleteUserById(userID);
     }
 }

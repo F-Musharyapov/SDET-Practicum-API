@@ -2,20 +2,18 @@ package tests;
 
 import helpers.BaseRequests;
 import io.qameta.allure.Description;
-import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import pojo.Addition;
 import pojo.User;
-import pojo.UserUpdate;
 
 import java.io.IOException;
-import java.util.Map;
 
 import static helpers.TestDataHelper.*;
-import static helpers.TestDataHelper.STATUS_CODE_OK;
 import static io.restassured.RestAssured.given;
+import static org.testng.Assert.assertNotEquals;
 
 /**
  * Класс тестирования PATCH-запроса
@@ -28,14 +26,14 @@ public class PatchUserTest {
     private RequestSpecification requestSpecification;
 
     /**
-     * Экземпляр массива для хранения данных до изменения
-     */
-    Map<String, Object> oldData;
-
-    /**
      * Переменная для хранения user ID
      */
-    String userID;
+    private String userID;
+
+    /**
+     * Переменная для хранения объекта pojo при post запросе
+     */
+    private User userPojoSet;
 
     /**
      * Метод инициализации спецификации запроса
@@ -50,85 +48,80 @@ public class PatchUserTest {
     @Test
     @Description("Тестовый метод для создания пользователя")
     public void createUser() {
-        User.Addition userAddition = User.Addition.builder()
-                .additional_info(ADD_INFO)
-                .additional_number(ADD_NUMBER)
-                .build();
 
         User userPojo = User.builder()
-                .addition(userAddition)
+                .addition(
+                        Addition.builder()
+                                .additional_info(ADD_INFO)
+                                .additional_number(ADD_NUMBER)
+                                .build())
+                .important_numbers(IMPORTANT_NUMBERS)
+                .title(TITLE)
+                .verified(VERIFIED)
                 .build();
 
         userID = given()
                 .spec(requestSpecification)
                 .body(userPojo)
                 .when()
-                .log().all()
-                .post("api/create")
+                .post(REQUEST_POST)
                 .then()
-                .log().all()
                 .statusCode(STATUS_CODE_OK)
                 .extract().asString();
     }
 
     @Test(dependsOnMethods = "createUser")
     @Description("Тестовый метод проверки добавления пользователя и добавления данных в массив")
-    public void getUserFirst() {
-        Response responseFirst = given()
+    public void userFirstGet() {
+        User userPojoSet = given()
                 .when()
-                .log().all()
-                .get("api/get/" + userID)
+                .get(REQUEST_GET + userID)
                 .then()
-                .log().all()
                 .statusCode(STATUS_CODE_OK)
-                .extract().response();
-        oldData = responseFirst.jsonPath().getMap("");
+                .extract().as(User.class);
     }
 
-    @Test(dependsOnMethods = "getUserFirst")
+    @Test(dependsOnMethods = "userFirstGet")
     @Description("Тестовый метод для изменения данных пользователя")
-    public void patchUser() {
-        UserUpdate.UpdateAddition userUpdateAddition = UserUpdate.UpdateAddition.builder()
-                .additional_info(ADD_INFO_UPDATE)
-                .additional_number(ADD_NUMBER_UPDATE)
-                .build();
-
-        UserUpdate userUpdatePojo = UserUpdate.builder()
-                .addition(userUpdateAddition)
+    public void userPatch() {
+        User userPojo = User.builder()
+                .addition(
+                        Addition.builder()
+                                .additional_info(ADD_INFO_UPDATE)
+                                .additional_number(ADD_NUMBER_UPDATE)
+                                .build())
+                .important_numbers(IMPORTANT_NUMBERS_UPDATE)
+                .title(TITLE_UPDATE)
+                .verified(VERIFIED)
                 .build();
 
         given()
                 .spec(requestSpecification)
-                .body(userUpdatePojo)
+                .body(userPojo)
                 .when()
-                .log().all()
-                .patch("/api/patch/" + userID)
+                .patch(REQUEST_PATCH + userID)
                 .then()
-                .log().all()
                 .statusCode(STATUS_CODE_NO_CONTENT)
                 .extract().asString();
     }
 
-    @Test(dependsOnMethods = "patchUser")
+    @Test(dependsOnMethods = "userPatch")
     @Description("Тестовый метод проверки внесения изменений и сравнения с предыдущими данными")
-    public void getUserSecond() {
-        Response responseSecond = given()
+    public void userSecondGet() {
+        User userPojoGet = given()
                 .when()
-                .log().all()
-                .get("api/get/" + userID)
+                .get(REQUEST_GET + userID)
                 .then()
-                .log().all()
                 .statusCode(STATUS_CODE_OK)
-                .extract().response();
-        Map<String, Object> newData = responseSecond.jsonPath().getMap("");
-        assert !oldData.equals(newData) : "Ошибка! Данные не изменились после обновления!";
+                .extract().as(User.class);
+        assertNotEquals(userPojoGet, userPojoSet, "Ошибка! Данные не изменились после обновления!");
     }
 
     /**
      * Метод удаления соданного user из базы после всех запросов
      */
     @AfterClass
-    public void deleteUserAfterCreation() {
+    public void userAfterCreationDelete() {
         BaseRequests.deleteUserById(String.valueOf(userID));
     }
 }
