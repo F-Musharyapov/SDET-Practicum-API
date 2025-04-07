@@ -45,8 +45,10 @@ public class PatchUserTest {
         requestSpecification = BaseRequests.initRequestSpecification();
     }
 
-    @Test
-    @Description("Тестовый метод для создания пользователя")
+    /**
+     * Метод для создания пользователя
+     */
+    @BeforeClass(dependsOnMethods = "setup")
     public void createUser() {
 
         User userPojo = User.builder()
@@ -68,12 +70,7 @@ public class PatchUserTest {
                 .then()
                 .statusCode(STATUS_CODE_OK)
                 .extract().asString();
-    }
-
-    @Test(dependsOnMethods = "createUser")
-    @Description("Тестовый метод проверки добавления пользователя и добавления данных в массив")
-    public void userFirstGet() {
-        User userPojoSet = given()
+        given()
                 .when()
                 .get(REQUEST_GET + userID)
                 .then()
@@ -81,7 +78,7 @@ public class PatchUserTest {
                 .extract().as(User.class);
     }
 
-    @Test(dependsOnMethods = "userFirstGet")
+    @Test
     @Description("Тестовый метод для изменения данных пользователя")
     public void userPatch() {
         User userPojo = User.builder()
@@ -103,11 +100,7 @@ public class PatchUserTest {
                 .then()
                 .statusCode(STATUS_CODE_NO_CONTENT)
                 .extract().asString();
-    }
 
-    @Test(dependsOnMethods = "userPatch")
-    @Description("Тестовый метод проверки внесения изменений и сравнения с предыдущими данными")
-    public void userSecondGet() {
         User userPojoGet = given()
                 .when()
                 .get(REQUEST_GET + userID)
