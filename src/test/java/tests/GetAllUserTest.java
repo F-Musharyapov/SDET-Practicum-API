@@ -115,10 +115,8 @@ public class GetAllUserTest {
 
         given()
                 .when()
-                .log().all()
                 .delete(REQUEST_DELETE + userID)
                 .then()
-                .log().all()
                 .statusCode(STATUS_CODE_NO_CONTENT);
     }
 
