@@ -13,30 +13,36 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
     <dependencies>
         <dependency>
-            <groupId>com.github.robohorse</groupId>
-            <artifactId>RoboPOJOGenerator</artifactId>
-            <version>2.3.2</version>
-        </dependency>
-        <!--<dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <version>7.11.0</version>
+            <version>7.8.0</version>
             <scope>test</scope>
-        </dependency>-->
+        </dependency>
         <dependency>
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-testng</artifactId>
-            <version>2.17.3</version>
+            <version>2.29.1</version>
         </dependency>
-        <!--<dependency>
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-rest-assured</artifactId>
+            <version>2.29.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>RELEASE</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>5.3.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
             <version>4.27.0</version>
@@ -50,7 +56,7 @@
             <groupId>org.aeonbits.owner</groupId>
             <artifactId>owner</artifactId>
             <version>1.0.12</version>
-        </dependency>-->
+        </dependency>
     </dependencies>
 
     <build>
